@@ -1,0 +1,9 @@
+.DS_Store
+tests_reports/
+cov.xml
+tmp/
+.vscode/
+.tool-versions
+.coverage
+
+*.rob.*

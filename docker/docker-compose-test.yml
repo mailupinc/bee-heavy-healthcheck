@@ -1,0 +1,17 @@
+version: '3.6'
+services:
+  service-bee-heavy-healthcheck-tests:
+    container_name: bee-heavy-healthcheck-tests
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+      target: $build_target
+      args:
+        - bee_env
+    image: bee/bee-heavy-healthcheck
+    volumes:
+      - ../:/opt/bee_heavy_healthcheck
+    environment:
+      git_sha: $git_sha
+      git_tag: $git_tag
+      pytest_flags: $pytest_flags
