@@ -17,8 +17,6 @@ COPY poetry.lock pyproject.toml ./
 
 RUN ${POETRY_HOME}/bin/poetry install --only main
 
-ARG bee_env
-ENV bee_env ${bee_env}
 ARG git_version
 ENV git_version ${git_version}
 ARG git_tag

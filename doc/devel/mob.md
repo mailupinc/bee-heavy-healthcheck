@@ -140,3 +140,16 @@ I can call the same healthcheck on other internal services (beware of recursive 
 
 - implement in small slices
 - unit tests are mandatory (maybe test first)
+
+### sample service
+
+GIT: `https://github.com/mailupinc/bee-deadcodepool`
+
+```bash
+
+curl https://pre-bee-deadcodepool.getbee.info/healthcheck                | jq
+curl https://pre-bee-deadcodepool.getbee.info/version                    | jq
+curl https://pre-bee-deadcodepool.getbee.info/deadcodepool/feature_one   | jq
+curl https://pre-bee-deadcodepool.getbee.info/heavy_healthcheck          | jq
+
+```

@@ -6,8 +6,6 @@ services:
       context: ../
       dockerfile: docker/Dockerfile
       target: $build_target
-      args:
-        - bee_env
     image: bee/bee-heavy-healthcheck
     volumes:
       - ../:/opt/bee_heavy_healthcheck

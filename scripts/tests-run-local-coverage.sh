@@ -19,26 +19,26 @@ NC='\033[0m' # No Color
 # Light Gray   0;37     White         1;37
 
 if [[ "${PRJ_DIR}" != "$(pwd)" ]]; then
-    printf "${Red}"
+    printf '%b' "${Red}"
     echo
     echo "Run script from the project dir ${PRJ_DIR} "
     echo "    example:"
     echo "             $ cd ${PRJ_DIR}"
     echo "             $ ./scripts/${SCRIPT_NAME}"
     echo
-    printf "${NC}"
+    printf '%b' "${NC}"
     exit
 fi
 
-printf "${Yellow}"
+printf '%b' "${Yellow}"
 echo
 echo " Run all tests and coverage report"
 echo " ==============================="
-printf "${NC}"
+printf '%b' "${NC}"
 echo "   - ✨ uses local poetry virtual env"
 echo "   - 📜 report coverage on console and on html [./htmlcov/index.html]"
 echo
-printf "${Light_Gray}"
+printf '%b' "${Light_Gray}"
 echo " Example run:"
 echo "     $ scripts/${SCRIPT_NAME}                # Run also integration tests (using db)"
 echo "     $ scripts/${SCRIPT_NAME} -k my_test     # Filter tests. only when my_test is part of the full path"
@@ -47,25 +47,16 @@ echo "     $ scripts/${SCRIPT_NAME} --lf           # Rerun only the tests that f
 echo "     $ scripts/${SCRIPT_NAME} --trace        # debug on every test"
 
 echo
-printf "${NC}"
+printf '%b' "${NC}"
 
 PARAM1=${1-NOTHING}
 if [[ $PARAM1 = "--help" ]]; then
     exit
 fi
 
-export bee_env=test
-
-printf "${Light_Gray}"
-echo "running tests bee_env:${bee_env}"
-printf "${NC}"
-
 export git_sha=$(git rev-parse --short --verify HEAD 2>/dev/null)
 export git_tag="test_${git_sha}_$(TZ=UTC date +v%y.%m.%d.%H%M%Z)"
 
-printf "${Yellow}"
-echo "Run pytest with extra params [ $@ ]"
-printf "${NC}"
 
 poetry run python -m coverage run --source bee_heavy_healthcheck -m pytest -ra -v tests -s --pdbcls=IPython.terminal.debugger:TerminalPdb "$@"
 poetry run python -m coverage report

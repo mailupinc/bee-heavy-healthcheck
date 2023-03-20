@@ -19,14 +19,14 @@ NC='\033[0m' # No Color
 # Light Gray   0;37     White         1;37
 
 if [[ "${PRJ_DIR}" != "$(pwd)" ]]; then
-    printf "${Red}"
+    printf '%b' "${Red}"
     echo
     echo "Run script from the project dir ${PRJ_DIR} "
     echo "    example:"
     echo "             $ cd ${PRJ_DIR}"
     echo "             $ ./scripts/${SCRIPT_NAME}"
     echo
-    printf "${NC}"
+    printf '%b' "${NC}"
     exit
 fi
 
@@ -35,11 +35,11 @@ docker_compose_file="./docker/docker-compose-test.yml"
 
 PARAM1=${1-NOTHING}
 if [[ $PARAM1 = "--help" ]]; then
-    printf "${Yellow}"
+    printf '%b' "${Yellow}"
     echo " "
     echo " Run all tests and coverage all (py and db) in containers"
     echo " ========================================================"
-    printf "${NC}"
+    printf '%b' "${NC}"
     echo
     echo " It's the same run done with the Burno (Jenkins) Pipeline"
     echo "     -1- Uses docker-compose with [${docker_compose_file}]"
@@ -47,7 +47,7 @@ if [[ $PARAM1 = "--help" ]]; then
     echo "     -3- Run unit and integration tests"
     echo "     -4- Copy all tests results in dir [${test_report_dir}] "
     echo ""
-    printf "${Light_Gray}"
+    printf '%b' "${Light_Gray}"
     echo "     Examples:"
     echo "             $ scripts/${SCRIPT_NAME}             # Run tests inside a docker container (it starts also a db)"
     echo "             $ scripts/${SCRIPT_NAME}  --clean    # Destroy all containers"
@@ -55,17 +55,17 @@ if [[ $PARAM1 = "--help" ]]; then
     echo "             $ scripts/${SCRIPT_NAME}  --help     # Print help"
     echo ""
     echo ""
-    printf "${NC}"
+    printf '%b' "${NC}"
     exit
 fi
 
 if [[ $PARAM1 = "--clean" ]]; then
-    printf "${Yellow}"
+    printf '%b' "${Yellow}"
     echo " "
     echo " Destroy all containers  (docker-compose rm --stop --force -v)"
     echo " ============================================================="
     echo " "
-    printf "${NC}"
+    printf '%b' "${NC}"
     docker-compose -f "${docker_compose_file}" rm --stop --force -v
     echo
     echo " CLEAN DONE "
@@ -74,20 +74,16 @@ if [[ $PARAM1 = "--clean" ]]; then
 fi
 
 if [[ $PARAM1 = "--top" ]]; then
-    printf "${Yellow}"
+    printf '%b' "${Yellow}"
     echo " "
     echo " Shows all processes in started containers (docker-compose top)"
     echo " =============================================================="
     echo " "
-    printf "${NC}"
+    printf '%b' "${NC}"
     docker-compose -f "${docker_compose_file}" top
 fi
 
-export bee_env=test
 
-printf "${Light_Gray}"
-echo "running tests bee_env:${bee_env}"
-printf "${NC}"
 
 export git_sha=$(git rev-parse --short --verify HEAD 2>/dev/null)
 export git_tag="test_${git_sha}_$(TZ=UTC date +v%y.%m.%d.%H%M%Z)"
@@ -99,16 +95,11 @@ export COMPOSE_PROJECT_NAME=heavy-healthcheck
 export pytest_flags="$@"
 # export BUILDKIT_PROGRESS=plain
 
-printf "${Yellow}"
-echo
-echo "Run pytest in docker with extra params [ $@ ]"
-echo
-printf "${NC}"
 
 docker-compose -f "${docker_compose_file}" build
 docker-compose -f "${docker_compose_file}" run service-bee-heavy-healthcheck-tests
-# docker-compose -f "${docker_compose_file}" run --rm service-bee-heavy-healthcheck-tests
-# docker-compose -f "${docker_compose_file}" rm --stop --force
+docker-compose -f "${docker_compose_file}" run --rm service-bee-heavy-healthcheck-tests
+docker-compose -f "${docker_compose_file}" rm --stop --force
 
 echo ""
 echo " DONE "
