@@ -1,4 +1,20 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
+from functools import wraps
+
+import requests
+
+
+def check_decorator(func):
+    @wraps(func)
+    def wrapper(name: str, *args, **kwargs):
+        start = datetime.utcnow()
+        data = func(name, *args, **kwargs)
+        stop = datetime.utcnow()
+        data["dur_ms"] = (stop - start) / timedelta(milliseconds=1)
+        data["name"] = name
+        return data
+
+    return wrapper
 
 
 def format_check_data(
@@ -34,3 +50,16 @@ def create_summary(output, total_duration, service_name) -> dict:
         },
         "checks_details": output,
     }
+
+
+@check_decorator
+def check_options(name, url, headers):
+    try:
+        resp = requests.options(url, headers=headers, timeout=1)
+        resp.raise_for_status()
+        data = format_check_data("OK", {"status_code": resp.status_code})
+    except requests.ConnectionError as e:
+        data = format_check_data("KO", {}, None, str(e))
+    except requests.HTTPError as e:
+        data = format_check_data("KO", {}, resp.status_code, str(e))
+    return data
