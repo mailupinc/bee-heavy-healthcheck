@@ -74,3 +74,7 @@ def check_s3(name, bucket_sandbox, file_key, s3_client_provider: Callable):
     except botocore.exceptions.ClientError as err:
         data = format_check_data("KO", {}, err.response["Error"]["Code"], str(err))
     return data
+
+
+def check_get(url, headers, name):
+    raise NotImplemented
