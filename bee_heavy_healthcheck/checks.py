@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from functools import wraps
+from typing import Callable
 
+import botocore
 import requests
 
 
@@ -17,9 +19,7 @@ def check_decorator(func):
     return wrapper
 
 
-def format_check_data(
-    status: str, extra: dict, error_code: str = "", error_message: str = ""
-):
+def format_check_data(status: str, extra: dict, error_code: str = "", error_message: str = ""):
     if error_code or error_message:
         error = {
             "error": {
@@ -62,4 +62,15 @@ def check_options(name, url, headers):
         data = format_check_data("KO", {}, None, str(e))
     except requests.HTTPError as e:
         data = format_check_data("KO", {}, resp.status_code, str(e))
+    return data
+
+
+@check_decorator
+def check_s3(name, bucket_sandbox, file_key, s3_client_provider: Callable):
+    s3cli = s3_client_provider()
+    try:
+        s3cli.head_object(Bucket=bucket_sandbox, Key=file_key)
+        data = format_check_data("OK", {})
+    except botocore.exceptions.ClientError as err:
+        data = format_check_data("KO", {}, err.response["Error"]["Code"], str(err))
     return data

@@ -23,7 +23,12 @@ mypy = "^1.1.1"
 ipdb = "^0.13.13"
 pre-commit = "^3.1.1"
 autoflake = "^2.0.2"
+moto = "^4.1.6"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+target-version = ['py310']
+line-length = 119

@@ -1,0 +1,9 @@
+[flake8]
+exclude =
+    __pycache__,
+    .git,
+    .nox,
+    */settings/*,
+    ./doc/*,
+max-line-length = 119
+extend-ignore = E203, W503
