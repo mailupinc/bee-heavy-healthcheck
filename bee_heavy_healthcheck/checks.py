@@ -52,6 +52,22 @@ def create_summary(output, total_duration, service_name) -> dict:
     }
 
 
+def create_summary_with_sum_duration(output, service_name) -> dict:
+    ko_names = [a.get("name") for a in output if a.get("status") == "KO"]
+    return {
+        "service_status": "KO" if any(ko_names) else "OK",
+        "service_name": service_name,
+        # "container_id": "?something-that-represents-the-container?",
+        "checks_summary": {
+            "dur_ms": sum([a.get("dur_ms", 0) for a in output]),
+            "count": len(output),
+            "ko_count": len(ko_names),
+            "ko_names": ko_names,
+        },
+        "checks_details": output,
+    }
+
+
 @check_decorator
 def check_options(name, url, headers):
     try:
@@ -77,4 +93,4 @@ def check_s3(name, bucket_sandbox, file_key, s3_client_provider: Callable):
 
 
 def check_get(url, headers, name):
-    raise NotImplemented
+    raise NotImplementedError
